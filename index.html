@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Waste Management Tracking System for Local Bodies | Report and Track Waste Complaints</title>
+<meta name="description" content="Report uncollected waste and sanitation problems to your local body, track every complaint by number, and help authorities assign crews and find the wards that need attention most.">
+<meta name="keywords" content="waste management, waste complaint portal, garbage complaint, sanitation complaint, municipal waste tracking, local body, Vasai Virar, uncollected garbage, complaint tracking system">
+<meta name="author" content="Ved Yogesh Vartak">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#123D2A">
+<link rel="canonical" href="https://YOUR-DOMAIN/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23123D2A'/%3E%3Cpath d='M9 11h14l-1.3 12a2 2 0 0 1-2 1.8h-7.4a2 2 0 0 1-2-1.8L9 11Z' fill='%238FE0B0'/%3E%3Cpath d='M7 11h18M13 11V8.5h6V11' stroke='%238FE0B0' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Waste Management Tracking System for Local Bodies">
+<meta property="og:description" content="Report uncollected waste and sanitation problems to your local body, track every complaint by number, and help authorities assign crews and find the wards that need attention most.">
+<meta property="og:url" content="https://YOUR-DOMAIN/">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Waste Management Tracking System for Local Bodies">
+<meta name="twitter:description" content="Report uncollected waste and sanitation problems to your local body, track every complaint by number, and help authorities assign crews and find the wards that need attention most.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Waste Management Tracking System for Local Bodies","url":"https://YOUR-DOMAIN/","description":"Report uncollected waste and sanitation problems to your local body, track every complaint by number, and help authorities assign crews and find the wards that need attention most.","applicationCategory":"GovernmentApplication","operatingSystem":"Any","inLanguage":"en-IN","audience":{"@type":"Audience","audienceType":"Citizens and municipal authorities"},"creator":{"@type":"Person","name":"Ved Yogesh Vartak"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap">
+<style>html,body{margin:0}:root{color-scheme:light}</style>
+<style>
+/* Layout: sticky civic header, one centred column (max 1120px). Deep-green hero band with a pickup-slip ticket; light sections below; authority side is a scan-first dashboard (summary strip, filterable table, plain bar charts, ward report). */
+:root{
+  --font-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --font-body:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --bg:#F2F4EE; --surface:#FFFFFF; --surface-2:#E8ECE2; --fg:#16221B; --muted:#56655B; --line:#D3DACD;
+  --accent:#17603F; --accent-fg:#FFFFFF; --accent-soft:#DCEADB;
+  --pending-fg:#A83F08; --pending-bg:#FBE5D7;
+  --assigned-fg:#1B5AA3; --assigned-bg:#DDE9F7;
+  --progress-fg:#7C5F00; --progress-bg:#F5EAC0;
+  --resolved-fg:#17603F; --resolved-bg:#DCEADB;
+  --danger:#B3261E; --radius:10px;
+  --hero-bg:#123D2A; --hero-fg:#F2F7F1; --hero-muted:#B9CFC0; --hero-dot:rgba(255,255,255,.07); --hero-ring:rgba(255,255,255,.05);
+  --hero-line:rgba(255,255,255,.35); --hero-em:#8FE0B0; --hero-btn-bg:#F2F7F1; --hero-btn-fg:#123D2A;
+  --code-bg:#14211A; --code-fg:#D6E8DA;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1712; --surface:#17221A; --surface-2:#1F2D23; --fg:#E6EEE6; --muted:#9AAA9E; --line:#2C3C31;
+    --accent:#4FBF86; --accent-fg:#08150D; --accent-soft:#1C3326;
+    --pending-fg:#F3A06E; --pending-bg:#3A2415;
+    --assigned-fg:#8DBBEE; --assigned-bg:#17283D;
+    --progress-fg:#E5C45A; --progress-bg:#352C0E;
+    --resolved-fg:#6FD0A0; --resolved-bg:#173324;
+    --danger:#F2867F;
+    --hero-bg:#163626; --hero-fg:#E8F2E8; --hero-muted:#A5BDAC; --hero-btn-bg:#E8F2E8; --hero-btn-fg:#123D2A;
+    --code-bg:#0A100C; --code-fg:#D6E8DA; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1712; --surface:#17221A; --surface-2:#1F2D23; --fg:#E6EEE6; --muted:#9AAA9E; --line:#2C3C31;
+  --accent:#4FBF86; --accent-fg:#08150D; --accent-soft:#1C3326;
+  --pending-fg:#F3A06E; --pending-bg:#3A2415;
+  --assigned-fg:#8DBBEE; --assigned-bg:#17283D;
+  --progress-fg:#E5C45A; --progress-bg:#352C0E;
+  --resolved-fg:#6FD0A0; --resolved-bg:#173324;
+  --danger:#F2867F;
+  --hero-bg:#163626; --hero-fg:#E8F2E8; --hero-muted:#A5BDAC; --hero-btn-bg:#E8F2E8; --hero-btn-fg:#123D2A;
+  --code-bg:#0A100C; --code-fg:#D6E8DA; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.55;padding-inline:clamp(16px,4vw,32px);padding-block:0}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin-inline:auto}
+.mono{font-family:var(--font-mono)}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sub{font-size:12.5px;color:var(--muted)}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:calc(-1 * clamp(16px,4vw,32px));padding-inline:clamp(16px,4vw,32px)}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 20px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.brand svg{width:32px;height:32px;color:var(--accent);flex:none}
+.brand b{font-family:var(--font-display);font-size:17px;line-height:1.1;display:block}
+.brand span{font-size:11.5px;color:var(--muted)}
+.nav{display:flex;flex-wrap:wrap;gap:4px}
+.nav button{background:none;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:500;color:var(--muted)}
+.nav button:hover{background:var(--surface-2);color:var(--fg)}
+.nav button[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+
+main{padding-block:24px 48px;display:flex;flex-direction:column;gap:56px}
+section{min-width:0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-fg);padding:11px 20px;font-weight:600;cursor:pointer;text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft);filter:none}
+.btn.small{padding:6px 12px;font-size:13px}
+
+/* hero */
+.herobox{background:var(--hero-bg);color:var(--hero-fg);border-radius:20px;padding:clamp(24px,5vw,60px);position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:40px;align-items:center}
+.herobox::before{content:"";position:absolute;inset:0;background-image:radial-gradient(var(--hero-dot) 1.3px,transparent 1.6px);background-size:22px 22px;pointer-events:none}
+.herobox::after{content:"";position:absolute;width:440px;height:440px;border-radius:50%;border:60px solid var(--hero-ring);right:-150px;top:-170px;pointer-events:none}
+.herobox>*{position:relative;z-index:1;min-width:0}
+.herobox .eyebrow{color:var(--hero-muted)}
+.herobox h1{font-size:clamp(36px,6.2vw,64px);margin-block:12px 18px}
+.herobox h1 em{font-style:normal;color:var(--hero-em)}
+.herobox p.lead{font-size:17px;max-width:52ch;color:var(--hero-muted)}
+.herobox .btn{background:var(--hero-btn-bg);color:var(--hero-btn-fg);border-color:var(--hero-btn-bg)}
+.herobox .btn.ghost{background:transparent;color:var(--hero-fg);border-color:var(--hero-line)}
+.herobox .btn.ghost:hover{background:var(--hero-dot)}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.trust{display:flex;flex-wrap:wrap;gap:8px 20px;margin:24px 0 0;padding:0;list-style:none;font-size:13px;color:var(--hero-muted)}
+.trust li::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--hero-em);margin-right:8px}
+@media (max-width:860px){.herobox{grid-template-columns:minmax(0,1fr)}}
+
+/* ticket */
+.ticket{background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:var(--radius);padding:18px;position:relative;display:flex;flex-direction:column;gap:14px;min-width:0;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.ticket::before,.ticket::after{content:"";position:absolute;top:58px;width:14px;height:14px;border-radius:50%;background:var(--hero-bg);border:1px solid var(--hero-bg)}
+.ticket::before{left:-8px;clip-path:inset(0 0 0 50%)}
+.ticket::after{right:-8px;clip-path:inset(0 50% 0 0)}
+.tk-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:14px;border-bottom:2px dashed var(--line)}
+.tk-id{font-family:var(--font-mono);font-weight:500;font-size:16px}
+.tk-body h3{font-size:18px;margin-bottom:4px}
+.panel .tk-head::before,.panel .tk-head::after{display:none}
+
+/* pills */
+.pill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.st-pending{color:var(--pending-fg);background:var(--pending-bg)}
+.st-assigned{color:var(--assigned-fg);background:var(--assigned-bg)}
+.st-progress{color:var(--progress-fg);background:var(--progress-bg)}
+.st-resolved{color:var(--resolved-fg);background:var(--resolved-bg)}
+.chip{display:inline-block;margin-left:6px;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;background:var(--pending-bg);color:var(--pending-fg)}
+
+/* timeline */
+.tl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.tl li{position:relative;padding-top:22px;font-size:12.5px;color:var(--muted);min-width:0}
+.tl li::before{content:"";position:absolute;top:0;left:0;width:14px;height:14px;border-radius:50%;background:var(--surface);border:2px solid var(--line);z-index:1}
+.tl li::after{content:"";position:absolute;top:6px;left:14px;right:0;height:2px;background:var(--line)}
+.tl li:last-child::after{display:none}
+.tl li.done{color:var(--fg)}
+.tl li.done::before{background:var(--accent);border-color:var(--accent)}
+.tl li.link::after{background:var(--accent)}
+.tl li b{display:block;font-weight:600}
+.tl li span{display:block;font-size:11.5px;color:var(--muted)}
+
+/* stat strip */
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.strip>div{padding:16px 20px;border-inline-start:1px solid var(--line);min-width:0}
+.strip>div:first-child{border-inline-start:0}
+.strip .n{font-family:var(--font-display);font-size:32px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.strip .l{font-size:12.5px;color:var(--muted)}
+.strip .warn .n{color:var(--pending-fg)}
+@media (max-width:640px){.strip>div{border-inline-start:0;border-top:1px solid var(--line)}.strip>div:first-child{border-top:0}}
+
+.sec-head{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.sec-head h2{font-size:clamp(26px,3.6vw,36px)}
+.sec-head p{color:var(--muted);max-width:62ch}
+
+/* category tiles */
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.cat{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;min-width:0;transition:border-color .15s,transform .15s}
+.cat:hover{border-color:var(--accent);transform:translateY(-2px)}
+.cat b{font-weight:600;line-height:1.25}
+.ic{width:42px;height:42px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.ic svg{width:22px;height:22px}
+
+/* how it works */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+.step{border-top:3px solid var(--accent);padding-top:14px;display:flex;flex-direction:column;gap:6px}
+.step .eyebrow{color:var(--accent)}
+.step h3{font-size:20px}
+.step p{color:var(--muted)}
+
+/* features */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.feat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.feat h3{font-size:18px}
+.feat p{color:var(--muted)}
+
+/* goals */
+.goals{background:var(--accent-soft);border-radius:20px;padding:clamp(22px,4vw,44px);display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px}
+.goals h3{font-size:24px;color:var(--accent);margin-bottom:8px}
+.goals p{color:var(--fg);opacity:.85}
+.goals .eyebrow{grid-column:1/-1;color:var(--accent)}
+
+.duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+@media (max-width:860px){.duo{grid-template-columns:minmax(0,1fr)}}
+
+/* lists */
+.list{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.list li+li{border-top:1px solid var(--line)}
+.list button{display:grid;grid-template-columns:78px minmax(0,1fr) auto;gap:4px 14px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:12px 16px;cursor:pointer}
+.list button:hover{background:var(--surface-2)}
+.list .t{min-width:0}
+.list .t b{font-weight:600;display:block}
+@media (max-width:560px){.list button{grid-template-columns:minmax(0,1fr) auto}.list .mono{grid-column:1/-1}}
+
+/* faq */
+.faq{border-top:1px solid var(--line);max-width:820px}
+.faq details{border-bottom:1px solid var(--line);padding:16px 0}
+.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--accent);font-size:22px;line-height:1}
+.faq details[open] summary::after{content:"\2212"}
+.faq p{color:var(--muted);margin-top:8px;max-width:70ch}
+
+/* contact band */
+.contact{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:clamp(18px,3vw,28px);display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.contact h3{font-size:16px;margin-bottom:4px}
+.contact .full{grid-column:1/-1}
+
+/* forms */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(16px,3vw,28px);min-width:0}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.formgrid .full{grid-column:1/-1}
+@media (max-width:640px){.formgrid{grid-template-columns:minmax(0,1fr)}}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-weight:600;font-size:13.5px}
+.field .hint{font-size:12.5px;color:var(--muted)}
+.field input,.field select,.field textarea,.toolbar input,.toolbar select,td select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;min-width:0}
+.field textarea{min-height:110px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.formerr{border:1px solid var(--danger);border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13.5px}
+.formerr ul{margin:4px 0 0;padding-left:18px}
+.formerr[hidden]{display:none!important}
+.page-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.page-grid{grid-template-columns:minmax(0,1fr)}}
+.aside{display:flex;flex-direction:column;gap:12px;color:var(--muted)}
+.aside h3{color:var(--fg);font-size:18px}
+.aside ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.done-box{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.done-box .tk-id{font-size:26px;color:var(--accent)}
+.kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 14px;font-size:14px;width:100%;margin:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.log li{display:grid;grid-template-columns:130px minmax(0,1fr);gap:10px}
+.log time{color:var(--muted);font-size:12.5px}
+@media (max-width:480px){.log li{grid-template-columns:minmax(0,1fr)}}
+.trackrow{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.trackrow .field{flex:1 1 220px}
+
+/* admin */
+.adm-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:12px}
+.adm-head h1{font-size:clamp(28px,4vw,40px)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.toolbar>*{flex:1 1 150px}
+.toolbar .count{flex:0 0 auto;align-self:center;color:var(--muted);font-size:13px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13.5px}
+.tbl-sm table{min-width:520px}
+th{text-align:left;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td select{padding:6px 8px;font-size:13px;min-width:120px}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.idlink{white-space:nowrap;background:none;border:0;padding:0;cursor:pointer;color:var(--accent);font-family:var(--font-mono);font-weight:500;font-size:13px;text-decoration:underline}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.chart h3{font-size:18px}
+.bars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.bars li{display:grid;grid-template-columns:minmax(90px,38%) minmax(0,1fr) 26px;gap:10px;align-items:center;font-size:13px}
+.bars .bl{overflow-wrap:anywhere}
+.bt{height:12px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.bf{display:block;height:100%;background:var(--accent);border-radius:3px}
+.bn{font-variant-numeric:tabular-nums;text-align:right;font-weight:600}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;height:170px;align-items:end;border-bottom:1px solid var(--line);padding-top:8px}
+.day{height:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px}
+.day .b{flex:1;max-width:16px;border-radius:3px 3px 0 0;position:relative;min-height:2px}
+.day .b i{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-style:normal;font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.b.rec{background:var(--accent)}
+.b.res{background:var(--assigned-fg)}
+.daylabels{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;font-size:11.5px;color:var(--muted);text-align:center}
+.legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .r::before{background:var(--accent)}
+.legend .s::before{background:var(--assigned-fg)}
+.insight{font-size:13.5px;color:var(--muted)}
+.insight b{color:var(--fg)}
+.crew td,.crew th{padding:8px 10px}
+.crew table{min-width:0}
+.mini{display:inline-block;width:70px;height:8px;background:var(--surface-2);border-radius:3px;overflow:hidden;vertical-align:middle;margin-right:8px}
+.mini i{display:block;height:100%;background:var(--accent)}
+
+/* about */
+.about-hero{display:flex;flex-direction:column;gap:12px;max-width:760px}
+.about-hero h1{font-size:clamp(32px,5vw,52px)}
+.about-hero p{color:var(--muted);font-size:16.5px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.flow .arrow{color:var(--muted)}
+pre{margin:0;background:var(--code-bg);color:var(--code-fg);border-radius:var(--radius);padding:16px 18px;overflow-x:auto;font-family:var(--font-mono);font-size:12.5px;line-height:1.6}
+.techchips{display:flex;flex-wrap:wrap;gap:8px}
+.techchips span{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 12px;font-size:13px;font-weight:500}
+.idcard{display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px 16px;font-size:14px;margin:0}
+.idcard dt{color:var(--muted)}
+.idcard dd{margin:0}
+.method{font-family:var(--font-mono);font-size:12px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+
+.sms{width:100%;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.sms-head{width:100%;display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:center}
+.sms-bubble{background:var(--accent-soft);color:var(--fg);border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:14px;line-height:1.5;max-width:46ch;overflow-wrap:anywhere}
+.sms-note{font-size:12.5px;color:var(--muted);max-width:60ch}
+footer{border-top:1px solid var(--line);padding-block:32px 40px;display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));gap:28px;color:var(--muted);font-size:13.5px}
+@media (max-width:760px){footer{grid-template-columns:minmax(0,1fr)}}
+footer h4{margin:0 0 8px;font-family:var(--font-display);font-size:15px;color:var(--fg)}
+footer ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.flink{background:none;border:0;padding:0;cursor:pointer;color:var(--muted);text-align:left}
+.flink:hover{color:var(--accent);text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100vw - 32px);z-index:10}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<noscript><h1>Waste Management Tracking System for Local Bodies</h1><p>Report uncollected waste and sanitation problems to your local body, track every complaint by number, and help authorities assign crews and find the wards that need attention most.</p><p>This site needs JavaScript to show the complaint form, tracking page and authority dashboard. Please enable JavaScript and reload.</p></noscript>
+
+
+<header class="top">
+  <div class="wrap">
+    <button class="brand" data-view="home" aria-label="Waste Management Tracking System, home">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M7 9h18l-1.6 16.2A2 2 0 0 1 21.4 27H10.6a2 2 0 0 1-2-1.8L7 9Z" fill="currentColor"/><path d="M5 9h22M12 9V6.5A1.5 1.5 0 0 1 13.5 5h5A1.5 1.5 0 0 1 20 6.5V9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M13 14v8M16 14v8M19 14v8" stroke="var(--bg)" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span><b>Waste Management Tracking</b><span>For local bodies and their citizens</span></span>
+    </button>
+    <nav class="nav" aria-label="Main">
+      <button data-view="home">Home</button>
+      <button data-view="report">Report an issue</button>
+      <button data-view="track">Track a complaint</button>
+      <button data-view="admin">Authority dashboard</button>
+      <button data-view="about">About the project</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <main id="main"></main>
+  <footer>
+    <div><h4>Waste Management Tracking System for Local Bodies</h4><p>A web platform where citizens report uncollected waste and sanitation problems, and local authorities assign, resolve and analyse them.</p></div>
+    <div><h4>Explore</h4><ul>
+      <li><button class="flink" data-view="report">Report an issue</button></li>
+      <li><button class="flink" data-view="track">Track a complaint</button></li>
+      <li><button class="flink" data-view="admin">Authority dashboard</button></li>
+      <li><button class="flink" data-view="about">About the project</button></li>
+    </ul></div>
+    <div><h4>Project</h4><ul>
+      <li>Academic project by Ved Yogesh Vartak, Roll No. 104</li>
+      <li>Built with HTML, CSS, JavaScript, Node.js and MongoDB. React.js is planned.</li>
+      
+    </ul></div>
+  </footer>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var HR=36e5, DAY=864e5, SLA=72*HR;
+var WARDS=['Virar East','Virar West','Nalasopara East','Nalasopara West','Vasai Road','Naigaon','Agashi','Arnala'];
+var CATS=['Uncollected garbage','Overflowing community bin','Illegal dumping','Blocked drain or sanitation','Burning of waste','Dead animal removal'];
+var CAT_INFO={
+  'Uncollected garbage':['bin','Missed pickups and piles left on the street'],
+  'Overflowing community bin':['bin2','Bins that are full, damaged or missing'],
+  'Illegal dumping':['truck','Debris or mixed waste dumped on open land'],
+  'Blocked drain or sanitation':['drop','Choked drains and sewage overflow'],
+  'Burning of waste':['flame','Open burning that fills the air with smoke'],
+  'Dead animal removal':['paw','Carcasses on roads or public places']
+};
+var CREWS=[
+  {name:'Crew A',wards:['Virar East','Virar West']},
+  {name:'Crew B',wards:['Nalasopara East','Nalasopara West']},
+  {name:'Crew C',wards:['Vasai Road','Naigaon']},
+  {name:'Crew D',wards:['Agashi','Arnala']}
+];
+var STATUSES=['Pending','Assigned','In progress','Resolved'];
+function smsPanel(c){
+  var s=c.sms||'failed';
+  var lab={sending:['st-assigned','Sending SMS'],sent:['st-resolved','SMS sent']}[s]||['st-pending','SMS not sent'];
+  var to='+91 '+c.phone.slice(0,5)+' '+c.phone.slice(5);
+  var note=s==='sent'?'Accepted by the SMS provider for '+to+'. It usually reaches the phone within a few seconds.'
+    :s==='sending'?'Contacting the SMS provider.'
+    :s==='dryrun'?'The server has no SMS provider set up yet, so nothing was sent. Your complaint is still registered. Keep the number above.'
+    :s==='limited'?'Too many SMS were requested for this number in the last hour, so none was sent now. Your complaint is registered. Keep the number above.'
+    :'The SMS could not be sent. Your complaint is registered, so keep the number above.';
+  return '<div class="sms"><div class="sms-head"><span class="eyebrow">SMS to '+esc(to)+'</span><span class="pill '+lab[0]+'">'+lab[1]+'</span></div>'+(c.smsBody?'<div class="sms-bubble">'+esc(c.smsBody)+'</div>':'')+'<p class="sms-note">'+note+'</p>'+(s==='failed'?'<button class="btn ghost small" data-action="resms" data-id="'+c.id+'">Try sending again</button>':'')+'</div>';
+}
+var KEY={'Pending':'pending','Assigned':'assigned','In progress':'progress','Resolved':'resolved'};
+var IC={
+  bin:'<path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z"/><path d="M3.5 7h17M9.5 7V4.5h5V7"/>',
+  bin2:'<path d="M5 9h14l-1.2 10.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 9Z"/><path d="M4 9c0-2.5 2-4 4-4 1 0 1.5.5 2.5.5S12 4 13.5 4 16 5.5 16 5.5 20 6 20 9"/>',
+  truck:'<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+  drop:'<path d="M12 3s6 6.2 6 10.5A6 6 0 0 1 6 13.5C6 9.2 12 3 12 3Z"/>',
+  flame:'<path d="M12 21c3.5 0 6-2.4 6-5.8 0-2.6-1.6-4.2-3-5.7-.3 1.4-1 2.2-2 2.6 0-3-1.4-5.4-3.5-7.1C9.5 8 6 10.6 6 15.2 6 18.6 8.5 21 12 21Z"/>',
+  paw:'<circle cx="7" cy="10" r="1.6"/><circle cx="11" cy="6.5" r="1.6"/><circle cx="15.5" cy="7" r="1.6"/><circle cx="18.5" cy="11" r="1.6"/><path d="M8 18c0-3 2.2-5 4.5-5s4.5 2 4.5 5c0 1.7-1.5 2-4.5 2S8 19.7 8 18Z"/>',
+  report:'<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="M13.5 6.5l4 4"/>',
+  track:'<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  assign:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 8h4M19 6v4"/>',
+  chart:'<path d="M4 20V4M4 20h16"/><path d="M8 16v-5M12 16V8M16 16v-3"/>',
+  db:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+  dash:'<rect x="4" y="4" width="7" height="8" rx="1.5"/><rect x="13" y="4" width="7" height="5" rx="1.5"/><rect x="13" y="11" width="7" height="9" rx="1.5"/><rect x="4" y="14" width="7" height="6" rx="1.5"/>'
+};
+function icon(n){return '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg></span>';}
+
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function crewForWard(w){var c=CREWS.filter(function(x){return x.wards.indexOf(w)>-1;})[0];return c?c.name:CREWS[0].name;}
+function fmtDate(iso){return new Date(iso).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});}
+function fmtAge(ms){var h=Math.floor(ms/HR);if(h<1)return 'under 1h';if(h<48)return h+'h';return Math.floor(h/24)+'d '+(h%24)+'h';}
+function pill(st){return '<span class="pill st-'+KEY[st]+'">'+st+'</span>';}
+function histAt(c,st){for(var i=0;i<c.history.length;i++){if(c.history[i].status===st)return c.history[i].at;}return null;}
+function resolutionMs(c){var r=histAt(c,'Resolved');return r?new Date(r)-new Date(c.created):0;}
+
+/* ---------- data layer: everything is stored by the server in the database ---------- */
+var TOKEN_KEY='wmts-admin-token';
+function getToken(){try{return sessionStorage.getItem(TOKEN_KEY)||'';}catch(e){return '';}}
+function setToken(t){try{if(t)sessionStorage.setItem(TOKEN_KEY,t);else sessionStorage.removeItem(TOKEN_KEY);}catch(e){}}
+var state={view:'home',complaints:[],trackId:'',tracked:null,trackState:'',filed:null,justFiled:'',prefillCat:'',token:getToken(),adminErr:'',adminLoaded:false,f:{status:'open',ward:'',q:''}};
+var EXAMPLE_TICKET={id:'WM-1001',category:'Uncollected garbage',location:'Near the station',ward:'Your ward',status:'In progress',crew:'Crew A',created:'',history:[
+  {status:'Pending',at:new Date(Date.now()-5*HR).toISOString(),note:''},
+  {status:'Assigned',at:new Date(Date.now()-4*HR).toISOString(),note:''},
+  {status:'In progress',at:new Date(Date.now()-2*HR).toISOString(),note:''}]};
+function api(method,url,body,auth){
+  var opt={method:method,headers:{}};
+  if(body!==undefined){opt.headers['Content-Type']='application/json';opt.body=JSON.stringify(body);}
+  if(auth&&state.token)opt.headers.Authorization='Bearer '+state.token;
+  return fetch(url,opt).then(function(r){
+    return r.json().catch(function(){return {};}).then(function(d){
+      if(!r.ok){var e=new Error(d.error||(d.errors&&d.errors.join(' '))||('Request failed ('+r.status+')'));e.status=r.status;throw e;}
+      return d;
+    });
+  });
+}
+function loadPublic(){
+  return api('GET','/api/public/complaints').then(function(d){if(state.view!=='admin')state.complaints=d.complaints;},function(){}).then(function(){if(state.view==='home')render();});
+}
+function loadAdmin(){
+  return api('GET','/api/admin/complaints',undefined,true).then(function(d){state.complaints=d.complaints;state.adminLoaded=true;render();},function(e){
+    if(e.status===401||e.status===503){logout(e.status===503?e.message:'Your session ended. Sign in again.');}
+    else{toast('Could not load complaints. Check your connection.');}
+  });
+}
+function logout(msg){state.token='';setToken('');state.complaints=[];state.adminLoaded=false;state.adminErr=msg||'';if(state.view==='admin')render();}
+function runTrack(){
+  state.tracked=null;
+  if(!state.trackId){state.trackState='';return;}
+  state.trackState='loading';
+  var id=state.trackId;
+  api('GET','/api/complaints/'+encodeURIComponent(id)).then(function(r){state.tracked=r.complaint;state.trackState='ok';},function(e){state.trackState=e.status===404?'notfound':'error';}).then(function(){
+    var el=document.getElementById('trackResult');
+    if(el&&state.view==='track'&&state.trackId===id)el.innerHTML=trackResult();
+  });
+}
+
+/* ---------- derived numbers ---------- */
+function stats(){
+  var cs=state.complaints, now=Date.now();
+  var open=cs.filter(function(c){return c.status!=='Resolved';});
+  var resolved=cs.filter(function(c){return c.status==='Resolved';});
+  var overdue=open.filter(function(c){return now-new Date(c.created)>SLA;});
+  var avg=resolved.length?resolved.reduce(function(a,c){return a+resolutionMs(c);},0)/resolved.length:0;
+  return {total:cs.length,open:open.length,pending:cs.filter(function(c){return c.status==='Pending';}).length,
+    active:cs.filter(function(c){return c.status==='Assigned'||c.status==='In progress';}).length,
+    resolved:resolved.length,overdue:overdue.length,avg:avg};
+}
+function countBy(field,onlyOpen){var m={};state.complaints.forEach(function(c){if(onlyOpen&&c.status==='Resolved')return;m[c[field]]=(m[c[field]]||0)+1;});return Object.keys(m).map(function(k){return [k,m[k]];}).sort(function(a,b){return b[1]-a[1];});}
+function wardReport(){
+  var now=Date.now();
+  return WARDS.map(function(w){
+    var cs=state.complaints.filter(function(c){return c.ward===w;});
+    var res=cs.filter(function(c){return c.status==='Resolved';});
+    var open=cs.filter(function(c){return c.status!=='Resolved';});
+    var od=open.filter(function(c){return now-new Date(c.created)>SLA;}).length;
+    var avg=res.length?res.reduce(function(a,c){return a+resolutionMs(c);},0)/res.length:0;
+    return {w:w,total:cs.length,res:res.length,open:open.length,od:od,avg:avg};
+  }).sort(function(a,b){return b.total-a.total;});
+}
+
+/* ---------- shared pieces ---------- */
+function timeline(c){
+  var cur=STATUSES.indexOf(c.status);
+  return '<ol class="tl" aria-label="Progress">'+STATUSES.map(function(s,i){
+    var at=histAt(c,s), done=i<=cur, cls=(done?'done':'')+(i<cur?' link':'');
+    return '<li class="'+cls+'"><b>'+s+'</b><span>'+(at&&done?fmtDate(at):'Waiting')+'</span></li>';
+  }).join('')+'</ol>';
+}
+function bars(entries){
+  var max=Math.max.apply(null,entries.map(function(e){return e[1];}).concat([1]));
+  return '<ul class="bars">'+entries.map(function(e){return '<li><span class="bl">'+esc(e[0])+'</span><span class="bt"><span class="bf" style="width:'+(e[1]/max*100)+'%"></span></span><span class="bn">'+e[1]+'</span></li>';}).join('')+'</ul>';
+}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show');},2600);}
+
+/* ---------- views ---------- */
+function viewHome(){
+  var s=stats(), cs=state.complaints.slice().sort(function(a,b){return new Date(b.created)-new Date(a.created);});
+  var feat=cs.filter(function(c){return c.status==='In progress';})[0]||cs[0]||EXAMPLE_TICKET, isExample=feat===EXAMPLE_TICKET;
+  var weekAgo=Date.now()-7*DAY;
+  var resWeek=state.complaints.filter(function(c){var r=histAt(c,'Resolved');return r&&new Date(r)>weekAgo;}).length;
+  var openByWard=countBy('ward',true);
+  return ''+
+  '<section class="herobox"><div>'+
+    '<div class="eyebrow">Waste complaints for wards and municipal bodies</div>'+
+    '<h1>Report it. Track it. <em>See it collected.</em></h1>'+
+    '<p class="lead">Tell your local body about waste that was not collected or a sanitation problem on your street. Follow the complaint from received to resolved, and help the authority see which areas keep needing attention.</p>'+
+    '<div class="cta"><button class="btn" data-view="report">Report an issue</button><button class="btn ghost" data-view="track">Track a complaint</button></div>'+
+    '<ul class="trust"><li>Free for citizens</li><li>Complaint number on submit</li><li>Updated by the ward crew</li></ul>'+
+  '</div>'+
+  '<article class="ticket" aria-label="Example complaint">'+
+    '<div class="tk-head"><span class="tk-id">'+feat.id+'</span>'+pill(feat.status)+'</div>'+
+    '<div class="tk-body"><h3>'+esc(feat.category)+'</h3><p class="sub">'+esc(feat.location)+', '+esc(feat.ward)+'</p></div>'+
+    timeline(feat)+
+    '<p class="sub">'+(feat.crew?esc(feat.crew)+' is on this complaint.':'Waiting for the authority to assign a crew.')+'</p>'+(isExample?'<p class="sub"><b>Example ticket.</b> Real complaints appear here once they are reported.</p>':'')+
+  '</article></section>'+
+
+  '<section class="strip" aria-label="Current numbers">'+
+    '<div><div class="n">'+s.open+'</div><div class="l">Open complaints</div></div>'+
+    '<div><div class="n">'+resWeek+'</div><div class="l">Resolved in the last 7 days</div></div>'+
+    '<div><div class="n">'+(s.resolved?fmtAge(s.avg):'n/a')+'</div><div class="l">Average time to resolve</div></div>'+
+    '<div><div class="n">'+WARDS.length+'</div><div class="l">Wards covered</div></div>'+
+  '</section>'+
+
+  '<section><div class="sec-head"><div class="eyebrow">What you can report</div><h2>Pick the problem, we route it to your ward</h2><p>Choose a type to start a complaint with it already selected.</p></div>'+
+  '<div class="cats">'+CATS.map(function(k){return '<button class="cat" data-cat="'+esc(k)+'">'+icon(CAT_INFO[k][0])+'<b>'+k+'</b><span class="sub">'+CAT_INFO[k][1]+'</span></button>';}).join('')+'</div></section>'+
+
+  '<section><div class="sec-head"><div class="eyebrow">How it works</div><h2>From a complaint to a clean street in three steps</h2></div>'+
+  '<div class="steps">'+
+    '<div class="step"><div class="eyebrow">Step 1</div><h3>Citizen reports</h3><p>Pick your ward, choose the type of problem, add the landmark and a short description. You get a complaint number straight away and a confirmation SMS.</p></div>'+
+    '<div class="step"><div class="eyebrow">Step 2</div><h3>Authority assigns</h3><p>The local body sees the complaint on its dashboard and assigns a collection crew for that ward.</p></div>'+
+    '<div class="step"><div class="eyebrow">Step 3</div><h3>Crew resolves, status updates</h3><p>The status moves to in progress and then resolved. Anyone with the complaint number can check it.</p></div>'+
+  '</div></section>'+
+
+  '<section><div class="sec-head"><div class="eyebrow">What the system does</div><h2>Built for the people on both sides of the complaint</h2><p>Citizens get a simple way to be heard. Authorities get one place to manage collection and see where it is falling short.</p></div>'+
+  '<div class="features">'+
+    '<div class="feat">'+icon('report')+'<h3>Online complaint reporting</h3><p>Report uncollected waste or sanitation issues from any phone or computer, with the place, the type and a description.</p></div>'+
+    '<div class="feat">'+icon('track')+'<h3>Status tracking</h3><p>Look up a complaint by its number and see when it was received, assigned, started and resolved.</p></div>'+
+    '<div class="feat">'+icon('assign')+'<h3>Task assignment</h3><p>Authorities assign collection tasks to ward crews and update progress as work happens.</p></div>'+
+    '<div class="feat">'+icon('dash')+'<h3>Administrative dashboard</h3><p>View, filter and search every complaint, with overdue ones flagged so nothing sits unnoticed.</p></div>'+
+    '<div class="feat">'+icon('db')+'<h3>Records on file</h3><p>Every complaint and every status change is kept, so there is a history to refer back to.</p></div>'+
+    '<div class="feat">'+icon('chart')+'<h3>Reports and analytics</h3><p>Ward-wise reports and charts show frequently affected areas and how fast complaints get resolved.</p></div>'+
+  '</div></section>'+
+
+  '<section class="goals"><div class="eyebrow">What the project aims for</div>'+
+    '<div><h3>Cleaner communities</h3><p>Waste that is reported gets collected, and areas that keep appearing in the data get more attention.</p></div>'+
+    '<div><h3>Faster resolution</h3><p>Complaints go straight to the authority with a ward and a place attached, so crews spend less time finding out what and where.</p></div>'+
+    '<div><h3>Better coordination</h3><p>Citizens and authorities see the same status, which cuts down on repeat calls and unanswered complaints.</p></div>'+
+  '</section>'+
+
+  '<section class="duo"><div class="chart"><div><div class="eyebrow">Open right now</div><h3>Open complaints by ward</h3></div>'+bars(openByWard)+'<p class="insight">Wards with the longest bars need the most collection effort this week.</p></div>'+
+  '<div><div class="sec-head" style="margin-bottom:12px"><div class="eyebrow">Recent activity</div><h3 style="font-size:22px">Latest complaints</h3></div>'+
+  '<ul class="list">'+(cs.length?cs.slice(0,6):[null]).map(function(c){if(!c)return '<li style="padding:16px;color:var(--muted)">No complaints have been reported yet.</li>';
+    return '<li><button data-track="'+c.id+'"><span class="mono">'+c.id+'</span><span class="t"><b>'+esc(c.category)+'</b><span class="sub">'+esc(c.location)+', '+esc(c.ward)+'</span></span>'+pill(c.status)+'</button></li>';
+  }).join('')+'</ul></div></section>'+
+
+  '<section><div class="sec-head"><div class="eyebrow">Questions</div><h2>Common questions</h2></div><div class="faq">'+
+    '<details><summary>Do I need an account to report a problem?</summary><p>No. You fill in the report form with your name and mobile number. The system gives you a complaint number that you can use to track it later.</p></details>'+
+    '<details><summary>Who can see my phone number?</summary><p>Only the local authority. The public tracking page shows the problem, the ward, the status and the activity log, and leaves out your name and number.</p></details>'+
+    '<details><summary>How long should a complaint take to resolve?</summary><p>The dashboard flags any complaint that is still open after 72 hours as overdue, so the authority can act on it first.</p></details>'+
+    '<details><summary>What if the problem is an emergency?</summary><p>For a dead animal in a busy place, a burst sewer or a fire from burning waste, report it here and also contact your ward office or the emergency number directly.</p></details>'+
+    '<details><summary>Can the authority see which areas have the most complaints?</summary><p>Yes. The dashboard charts complaints by ward and by type, and a ward report shows received, resolved, open and overdue counts with the average time to resolve.</p></details>'+
+  '</div></section>'+
+
+  '<section class="contact"><div class="full"><div class="eyebrow">Contact</div><h2 style="font-size:26px;margin-top:6px">Reach your local body</h2></div>'+
+    '<div><h3>Helpline</h3><p class="mono">1800-XXX-XXXX</p><p class="sub">Sample number. Replace with your local body helpline.</p></div>'+
+    '<div><h3>Email</h3><p class="mono">swachh@yourcity.gov.in</p><p class="sub">Sample address.</p></div>'+
+    '<div><h3>Office hours</h3><p>Monday to Saturday, 9:00 am to 6:00 pm</p><p class="sub">Complaints can be filed here at any time.</p></div>'+
+    '<div><h3>Ready to report?</h3><button class="btn" data-view="report">Report an issue</button></div>'+
+  '</section>';
+}
+
+function viewReport(){
+  var c=state.filed;
+  if(state.justFiled&&c&&c.id===state.justFiled){
+    return '<section class="page-grid"><div class="panel done-box">'+
+      '<div class="eyebrow">Complaint received</div><div class="tk-id mono">'+c.id+'</div>'+
+      '<p>Your complaint has been saved and sent to the authority for '+esc(c.ward)+'. Keep this number to check progress.</p>'+
+      '<dl class="kv"><dt>Type</dt><dd>'+esc(c.category)+'</dd><dt>Location</dt><dd>'+esc(c.location)+', '+esc(c.ward)+'</dd><dt>Filed</dt><dd>'+fmtDate(c.created)+'</dd><dt>Status</dt><dd>'+pill(c.status)+'</dd></dl>'+
+      smsPanel(c)+
+      '<div class="actions"><button class="btn" data-track="'+c.id+'">Track this complaint</button><button class="btn ghost" data-action="again">Report another</button></div>'+
+      '</div><div class="aside"><h3>What happens next</h3><ul><li>The authority reviews the complaint and assigns a crew.</li><li>Status changes to in progress when work starts.</li><li>Complaints open for more than 72 hours are flagged as overdue.</li></ul></div></section>';
+  }
+  return '<section><div class="sec-head"><div class="eyebrow">Citizen portal</div><h2>Report a waste or sanitation issue</h2><p>Takes about a minute. Fields marked with an asterisk are required.</p></div>'+
+  '<div class="page-grid"><form class="panel" id="reportForm" novalidate><div class="formgrid">'+
+    '<div class="field"><label for="r-name">Your name *</label><input id="r-name" name="name" autocomplete="name"></div>'+
+    '<div class="field"><label for="r-phone">Mobile number *</label><input id="r-phone" name="phone" inputmode="numeric" autocomplete="tel" placeholder="10 digits"><span class="hint">Only the authority can see this. A confirmation SMS is sent to this number.</span></div>'+
+    '<div class="field"><label for="r-ward">Ward *</label><select id="r-ward" name="ward"><option value="">Choose a ward</option>'+WARDS.map(function(w){return '<option>'+w+'</option>';}).join('')+'</select></div>'+
+    '<div class="field"><label for="r-cat">Type of problem *</label><select id="r-cat" name="category"><option value="">Choose a type</option>'+CATS.map(function(w){return '<option'+(w===state.prefillCat?' selected':'')+'>'+w+'</option>';}).join('')+'</select></div>'+
+    '<div class="field full"><label for="r-loc">Street or landmark *</label><input id="r-loc" name="location" placeholder="For example, near the station east foot overbridge"></div>'+
+    '<div class="field full"><label for="r-desc">What is the problem? *</label><textarea id="r-desc" name="desc" placeholder="How long has it been there, and how big is the problem?"></textarea></div>'+
+    '<div class="field full"><label for="r-photo">Photo (optional)</label><input id="r-photo" name="photo" type="file" accept="image/*"><span class="hint">Only the file name is recorded with the complaint. Photo upload is planned.</span></div>'+
+    '<div class="full formerr" id="formErr" hidden role="alert"></div>'+
+    '<div class="full"><button class="btn" type="submit">Submit complaint</button></div>'+
+  '</div></form>'+
+  '<div class="aside"><h3>Before you report</h3><ul><li>Choose the ward where the waste is, not where you live.</li><li>A landmark helps the crew find the spot quickly.</li><li>For a dead animal, a burst sewer or a fire, report it here and also call your ward office.</li></ul></div></div></section>';
+}
+
+function viewTrack(){
+  return '<section><div class="sec-head"><div class="eyebrow">Citizen portal</div><h2>Track a complaint</h2><p>Enter the number you received when you filed it. Numbers look like WM-1004.</p></div>'+
+  '<form class="trackrow" id="trackForm"><div class="field"><label for="t-id">Complaint number</label><input id="t-id" class="mono" value="'+esc(state.trackId)+'" placeholder="WM-1004" autocomplete="off"></div><button class="btn" type="submit">Check status</button></form>'+
+  '<div id="trackResult" style="margin-top:24px">'+trackResult()+'</div></section>';
+}
+function normId(v){v=String(v).trim().toUpperCase();if(/^\d+$/.test(v))v='WM-'+v;return v;}
+function trackResult(){
+  if(!state.trackId)return '';
+  if(state.trackState==='loading')return '<p class="sub">Looking up '+esc(state.trackId)+'...</p>';
+  if(state.trackState==='notfound')return '<div class="formerr">No complaint found with the number '+esc(state.trackId)+'. Check the number and try again.</div>';
+  if(state.trackState==='error')return '<div class="formerr">Could not reach the server. Try again in a moment.</div>';
+  var c=state.tracked;if(!c)return '';
+  var open=c.status!=='Resolved', age=Date.now()-new Date(c.created);
+  return '<article class="panel" style="display:flex;flex-direction:column;gap:20px">'+
+    '<div class="tk-head"><span class="tk-id">'+c.id+'</span><span>'+pill(c.status)+(open&&age>SLA?'<span class="chip">Overdue</span>':'')+'</span></div>'+
+    timeline(c)+
+    '<dl class="kv"><dt>Type</dt><dd>'+esc(c.category)+'</dd><dt>Location</dt><dd>'+esc(c.location)+', '+esc(c.ward)+'</dd><dt>Description</dt><dd>'+esc(c.desc||'')+'</dd><dt>Filed</dt><dd>'+fmtDate(c.created)+'</dd><dt>Crew</dt><dd>'+(c.crew?esc(c.crew):'Not assigned yet')+'</dd><dt>'+(open?'Open for':'Resolved in')+'</dt><dd>'+fmtAge(open?age:resolutionMs(c))+'</dd></dl>'+
+    '<div><div class="eyebrow" style="margin-bottom:8px">Activity log</div><ul class="log">'+c.history.map(function(x){return '<li><time>'+fmtDate(x.at)+'</time><span>'+esc(x.note)+'</span></li>';}).join('')+'</ul></div></article>';
+}
+
+function rowHTML(c){
+  var open=c.status!=='Resolved', age=Date.now()-new Date(c.created), od=open&&age>SLA;
+  return '<tr><td><button class="idlink" data-track="'+c.id+'">'+c.id+'</button></td>'+
+  '<td><strong>'+esc(c.ward)+'</strong><div class="sub">'+esc(c.location)+'</div></td>'+
+  '<td>'+esc(c.category)+'<div class="sub">'+esc((c.desc||'').length>70?c.desc.slice(0,70)+'...':(c.desc||''))+'</div></td>'+
+  '<td class="num">'+fmtAge(open?age:resolutionMs(c))+(od?'<span class="chip">Overdue</span>':'')+'<div class="sub">'+(open?'open':'to resolve')+'</div></td>'+
+  '<td>'+pill(c.status)+'</td>'+
+  '<td><select data-field="crew" data-id="'+c.id+'" aria-label="Crew for '+c.id+'"><option value="">Unassigned</option>'+CREWS.map(function(k){return '<option'+(k.name===c.crew?' selected':'')+'>'+k.name+'</option>';}).join('')+'</select></td>'+
+  '<td><select data-field="status" data-id="'+c.id+'" aria-label="Status for '+c.id+'">'+STATUSES.map(function(s){return '<option'+(s===c.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td></tr>';
+}
+function filtered(){
+  var f=state.f, q=f.q.trim().toLowerCase();
+  return state.complaints.filter(function(c){
+    if(f.status==='open'&&c.status==='Resolved')return false;
+    if(f.status!=='open'&&f.status!=='all'&&c.status!==f.status)return false;
+    if(f.ward&&c.ward!==f.ward)return false;
+    if(q&&(c.id+' '+c.location+' '+c.category+' '+c.desc+' '+c.ward).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  }).sort(function(a,b){
+    var ao=a.status!=='Resolved', bo=b.status!=='Resolved';
+    if(ao!==bo)return ao?-1:1;
+    return ao?new Date(a.created)-new Date(b.created):new Date(b.created)-new Date(a.created);
+  });
+}
+function updateTable(){
+  var list=filtered();
+  document.getElementById('tbody').innerHTML=list.length?list.map(rowHTML).join(''):'<tr><td colspan="7" style="padding:28px;text-align:center;color:var(--muted)">No complaints match these filters.</td></tr>';
+  document.getElementById('rowcount').textContent=list.length+' of '+state.complaints.length+' complaints';
+}
+function dayChart(){
+  var start=new Date();start.setHours(0,0,0,0);var days=[];
+  for(var i=6;i>=0;i--){var d=new Date(start.getTime()-i*DAY);days.push({d:d,rec:0,res:0});}
+  function slot(iso){var t=new Date(iso).getTime();for(var i=0;i<7;i++){if(t>=days[i].d.getTime()&&t<days[i].d.getTime()+DAY)return days[i];}return null;}
+  state.complaints.forEach(function(c){var a=slot(c.created);if(a)a.rec++;var r=histAt(c,'Resolved');if(r){var b=slot(r);if(b)b.res++;}});
+  var max=Math.max.apply(null,days.map(function(x){return Math.max(x.rec,x.res);}).concat([1]));
+  return '<div class="days" role="img" aria-label="Complaints received and resolved per day, last 7 days">'+days.map(function(x){
+    return '<div class="day"><div class="b rec" style="height:'+(x.rec/max*88)+'%">'+(x.rec?'<i>'+x.rec+'</i>':'')+'</div><div class="b res" style="height:'+(x.res/max*88)+'%">'+(x.res?'<i>'+x.res+'</i>':'')+'</div></div>';
+  }).join('')+'</div><div class="daylabels">'+days.map(function(x){return '<span>'+x.d.toLocaleDateString('en-IN',{weekday:'short'})+'<br>'+x.d.getDate()+'</span>';}).join('')+'</div>'+
+  '<div class="legend"><span class="r">Received</span><span class="s">Resolved</span></div>';
+}
+function viewAdmin(){
+  if(!state.token){
+    return '<section class="page-grid"><form class="panel" id="loginForm" novalidate style="display:flex;flex-direction:column;gap:14px"><div><div class="eyebrow">Authority view</div><h2 style="font-size:28px;margin-top:6px">Sign in to the dashboard</h2></div>'+
+      '<div class="field"><label for="a-pass">Password</label><input id="a-pass" type="password" autocomplete="current-password"></div>'+
+      (state.adminErr?'<div class="formerr" role="alert">'+esc(state.adminErr)+'</div>':'')+
+      '<div><button class="btn" type="submit">Sign in</button></div></form>'+
+      '<div class="aside"><h3>Why sign in?</h3><ul><li>The dashboard shows the names and phone numbers of citizens, so only authority staff may open it.</li><li>The password is set by whoever runs the server, in the ADMIN_PASSWORD setting.</li></ul></div></section>';
+  }
+  var s=stats(), wards=countBy('ward'), cats=countBy('category'), topW=wards[0], topC=cats[0], wr=wardReport();
+  var crewRows=CREWS.map(function(k){
+    var mine=state.complaints.filter(function(c){return c.crew===k.name;});
+    return '<tr><td><b>'+k.name+'</b></td><td>'+k.wards.join(', ')+'</td><td class="num">'+mine.filter(function(c){return c.status!=='Resolved';}).length+'</td><td class="num">'+mine.filter(function(c){return c.status==='Resolved';}).length+'</td></tr>';
+  }).join('');
+  var wardRows=wr.map(function(r){
+    var pct=r.total?Math.round(r.res/r.total*100):0;
+    return '<tr><td><b>'+r.w+'</b></td><td class="num">'+r.total+'</td><td class="num">'+r.open+'</td><td class="num">'+r.od+'</td><td class="num"><span class="mini"><i style="width:'+pct+'%"></i></span>'+pct+'%</td><td class="num">'+(r.res?fmtAge(r.avg):'n/a')+'</td></tr>';
+  }).join('');
+  return ''+
+  '<section><div class="adm-head"><div><div class="eyebrow">Authority view</div><h1>Complaints dashboard</h1></div>'+
+    '<div class="actions"><button class="btn small" data-action="csv">Download report (CSV)</button><button class="btn ghost small" data-action="logout">Sign out</button></div></div>'+
+    (state.adminLoaded?'':'<p class="sub" style="margin-top:8px">Loading complaints from the database...</p>')+'</section>'+
+  '<section class="strip" aria-label="Summary">'+
+    '<div><div class="n">'+s.total+'</div><div class="l">Total complaints</div></div>'+
+    '<div><div class="n">'+s.pending+'</div><div class="l">Pending, no crew yet</div></div>'+
+    '<div><div class="n">'+s.active+'</div><div class="l">Assigned or in progress</div></div>'+
+    '<div><div class="n">'+s.resolved+'</div><div class="l">Resolved</div></div>'+
+    '<div class="'+(s.overdue?'warn':'')+'"><div class="n">'+s.overdue+'</div><div class="l">Overdue (open over 72h)</div></div>'+
+    '<div><div class="n">'+(s.resolved?fmtAge(s.avg):'n/a')+'</div><div class="l">Average time to resolve</div></div>'+
+  '</section>'+
+  '<section><div class="sec-head"><h2>All complaints</h2><p>Open complaints are listed oldest first. Assigning a crew to a pending complaint moves it to assigned. Every change is saved to the database.</p></div>'+
+  '<div class="toolbar">'+
+    '<select id="f-status" aria-label="Filter by status"><option value="open">Open complaints</option><option value="all">All complaints</option>'+STATUSES.map(function(x){return '<option>'+x+'</option>';}).join('')+'</select>'+
+    '<select id="f-ward" aria-label="Filter by ward"><option value="">All wards</option>'+WARDS.map(function(w){return '<option>'+w+'</option>';}).join('')+'</select>'+
+    '<input id="f-q" type="search" placeholder="Search number, place or type" aria-label="Search complaints">'+
+    '<span class="count" id="rowcount"></span></div>'+
+  '<div class="tablewrap"><table><thead><tr><th>No.</th><th>Ward and location</th><th>Problem</th><th>Open time</th><th>Status</th><th>Crew</th><th>Update status</th></tr></thead><tbody id="tbody"></tbody></table></div></section>'+
+  '<section><div class="sec-head"><h2>Where the problems are</h2><p>Basic analytics from all complaints on record.</p></div><div class="charts">'+
+    '<div class="chart"><h3>Complaints by ward</h3>'+bars(wards)+(topW?'<p class="insight"><b>'+esc(topW[0])+'</b> has the most complaints: '+topW[1]+' of '+s.total+' ('+Math.round(topW[1]/s.total*100)+'%).</p>':'<p class="insight">No complaints yet.</p>')+'</div>'+
+    '<div class="chart"><h3>Complaints by type</h3>'+bars(cats)+(topC?'<p class="insight">Most common: <b>'+esc(topC[0].toLowerCase())+'</b> ('+topC[1]+').</p>':'<p class="insight">No complaints yet.</p>')+'</div>'+
+    '<div class="chart"><h3>Last 7 days</h3>'+dayChart()+'</div>'+
+    '<div class="chart crew"><h3>Crew workload</h3><div class="tablewrap" style="border:0"><table><thead><tr><th>Crew</th><th>Wards</th><th>Active</th><th>Done</th></tr></thead><tbody>'+crewRows+'</tbody></table></div></div>'+
+  '</div></section>'+
+  '<section><div class="sec-head"><h2>Ward report</h2><p>One row per ward, most complaints first. Use it to decide where to send extra crews.</p></div>'+
+  '<div class="tablewrap tbl-sm"><table><thead><tr><th>Ward</th><th>Received</th><th>Open</th><th>Overdue</th><th>Resolved</th><th>Avg. time to resolve</th></tr></thead><tbody>'+wardRows+'</tbody></table></div></section>';
+}
+
+var SCHEMA=`const ComplaintSchema = new mongoose.Schema({
+  complaintId: { type: String, unique: true },        // WM-1001
+  citizen:     { name: String, phone: String },
+  ward:        { type: String, required: true },
+  category:    { type: String, required: true },
+  location:    String,
+  description: String,
+  photoUrl:    String,
+  status:      { type: String, default: 'Pending' },  // Pending | Assigned | In progress | Resolved
+  crew:        { type: mongoose.Schema.Types.ObjectId, ref: 'Crew' },
+  history:     [{ status: String, note: String, at: Date }]
+}, { timestamps: true });`;
+
+function viewAbout(){
+  return ''+
+  '<section class="about-hero"><div class="eyebrow">About the project</div><h1>Waste Management Tracking System for Local Bodies</h1>'+
+  '<p>A web platform that helps local bodies monitor and manage waste collection. Citizens report uncollected waste or sanitation issues online. Authorities view the complaints, assign collection tasks, update their status and follow waste management activity through an administrative dashboard.</p>'+
+  '<p>The system keeps records and produces basic reports and analytics, so frequently affected areas can be identified and collection services improved.</p></section>'+
+
+  '<section class="goals"><div class="eyebrow">Objectives</div>'+
+    '<div><h3>Cleaner communities</h3><p>Make it easy to report waste problems and make sure they reach the right ward.</p></div>'+
+    '<div><h3>Faster resolution</h3><p>Shorten the time between a complaint being filed and the problem being fixed.</p></div>'+
+    '<div><h3>Better coordination</h3><p>Give citizens and authorities one shared view of every complaint.</p></div>'+
+  '</section>'+
+
+  '<section><div class="sec-head"><div class="eyebrow">Modules</div><h2>Three parts, one workflow</h2></div><div class="features">'+
+    '<div class="feat">'+icon('report')+'<h3>Citizen module</h3><p>Report an issue with ward, type, landmark, description and an optional photo. Receive a complaint number and a confirmation SMS. Track the status and read the activity log.</p></div>'+
+    '<div class="feat">'+icon('dash')+'<h3>Authority module</h3><p>View all complaints, filter and search, assign collection crews, update status, and see overdue complaints at a glance.</p></div>'+
+    '<div class="feat">'+icon('chart')+'<h3>Records and analytics</h3><p>Every complaint and status change is stored. Charts by ward and type, a 7-day trend, crew workload and a ward report show where to focus.</p></div>'+
+  '</div></section>'+
+
+  '<section><div class="sec-head"><div class="eyebrow">Workflow</div><h2>Life of a complaint</h2><p>Each complaint moves through four statuses. Every change is time-stamped in its activity log.</p></div>'+
+  '<div class="flow">'+STATUSES.map(function(x,i){return pill(x)+(i<3?'<span class="arrow" aria-hidden="true">&rarr;</span>':'');}).join('')+'</div></section>'+
+
+  '<section><div class="sec-head"><div class="eyebrow">Technology</div><h2>Technology used</h2></div>'+
+  '<div class="tablewrap tbl-sm"><table><thead><tr><th>Layer</th><th>Technology</th><th>Used for</th></tr></thead><tbody>'+
+    '<tr><td><b>Structure and style</b></td><td>HTML, CSS</td><td>Pages, layout and responsive design for phones and desktops</td></tr>'+
+    '<tr><td><b>Interaction</b></td><td>JavaScript</td><td>Form validation, filtering, status updates and charts</td></tr>'+
+    '<tr><td><b>Front end</b></td><td>React.js (planned)</td><td>Reusable components for the citizen portal and the dashboard</td></tr>'+
+    '<tr><td><b>Back end</b></td><td>Node.js</td><td>REST API for complaints, assignment, status and reports</td></tr>'+
+    '<tr><td><b>Database</b></td><td>MongoDB</td><td>Storing complaints, crews and their status history</td></tr>'+
+  '</tbody></table></div></section>'+
+
+  '<section class="duo"><div><div class="sec-head" style="margin-bottom:12px"><div class="eyebrow">Data model</div><h3 style="font-size:24px">Complaint document</h3></div><pre><code>'+esc(SCHEMA)+'</code></pre></div>'+
+  '<div><div class="sec-head" style="margin-bottom:12px"><div class="eyebrow">API</div><h3 style="font-size:24px">API endpoints</h3></div><div class="tablewrap tbl-sm"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead><tbody>'+
+    '<tr><td><span class="method">POST</span></td><td class="mono">/api/complaints</td><td>Citizen files a complaint; it is saved and the SMS is sent</td></tr>'+
+    '<tr><td><span class="method">GET</span></td><td class="mono">/api/complaints/:id</td><td>Track one complaint</td></tr>'+
+    '<tr><td><span class="method">GET</span></td><td class="mono">/api/public/complaints</td><td>Public list without personal details</td></tr>'+
+    '<tr><td><span class="method">POST</span></td><td class="mono">/api/complaints/:id/resend-sms</td><td>Resend the confirmation SMS</td></tr>'+
+    '<tr><td><span class="method">POST</span></td><td class="mono">/api/admin/login</td><td>Authority sign-in</td></tr>'+
+    '<tr><td><span class="method">GET</span></td><td class="mono">/api/admin/complaints</td><td>Authority list with full details</td></tr>'+
+    '<tr><td><span class="method">PATCH</span></td><td class="mono">/api/admin/complaints/:id</td><td>Assign a crew or update status</td></tr>'+
+  '</tbody></table></div></div></section>'+
+
+  '<section class="duo"><div class="panel"><div class="eyebrow" style="margin-bottom:12px">Project details</div><dl class="idcard"><dt>Project title</dt><dd>Waste Management Tracking System for Local Bodies</dd><dt>Group size</dt><dd>1</dd><dt>Student</dt><dd>Ved Yogesh Vartak</dd><dt>Roll number</dt><dd>104</dd></dl>'+
+  '<div class="techchips" style="margin-top:16px"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>React.js</span><span>Node.js</span><span>MongoDB</span></div></div>'+
+  '<div class="panel"><div class="eyebrow" style="margin-bottom:12px">Future scope</div><div class="aside"><ul><li>SMS and email updates every time a complaint changes status</li><li>GPS location and photo upload with each complaint</li><li>Separate accounts and roles for each ward officer</li><li>Crew mobile app and route planning for collection vehicles</li><li>Downloadable monthly reports</li></ul></div></div></section>';
+}
+
+/* ---------- render ---------- */
+function render(){
+  var m=document.getElementById('main');
+  m.innerHTML={home:viewHome,report:viewReport,track:viewTrack,admin:viewAdmin,about:viewAbout}[state.view]();
+  Array.prototype.forEach.call(document.querySelectorAll('.nav button'),function(b){
+    if(b.getAttribute('data-view')===state.view)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+  });
+  if(state.view==='admin'&&state.token){
+    document.getElementById('f-status').value=state.f.status;
+    document.getElementById('f-ward').value=state.f.ward;
+    document.getElementById('f-q').value=state.f.q;
+    updateTable();
+  }
+}
+var TITLES={home:'Waste Management Tracking System for Local Bodies',report:'Report a waste issue | Waste Management Tracking System',track:'Track a complaint | Waste Management Tracking System',admin:'Authority dashboard | Waste Management Tracking System',about:'About the project | Waste Management Tracking System'};
+function go(v){
+  state.view=v;
+  if(v==='admin'&&!state.adminLoaded)state.complaints=[];
+  if(v!=='report'){state.justFiled='';state.filed=null;state.prefillCat='';}
+  render();
+  try{document.title=TITLES[v];}catch(e){}
+  window.scrollTo(0,0);
+  if(v==='home')loadPublic();
+  if(v==='admin'&&state.token){loadAdmin();}
+  if(v==='track'&&state.trackId){runTrack();var el=document.getElementById('trackResult');if(el)el.innerHTML=trackResult();}
+}
+
+/* ---------- actions ---------- */
+function adminChange(id,field,val){
+  var body={};body[field]=val;
+  api('PATCH','/api/admin/complaints/'+id,body,true).then(function(r){
+    state.complaints=state.complaints.map(function(c){return c.id===id?r.complaint:c;});
+    toast(field==='crew'?(val?id+' assigned to '+val:id+' is now unassigned'):id+' updated to '+val);
+  },function(e){
+    if(e.status===401){logout('Your session ended. Sign in again.');return;}
+    toast('Could not save the change. Try again.');
+  }).then(function(){if(state.view==='admin'&&state.token)render();});
+}
+function submitReport(form){
+  var d={name:form.name.value.trim(),phone:form.phone.value.replace(/\s/g,''),ward:form.ward.value,category:form.category.value,location:form.location.value.trim(),desc:form.desc.value.trim()};
+  var errs=[];
+  if(!d.name)errs.push('Enter your name.');
+  if(!/^[6-9]\d{9}$/.test(d.phone))errs.push('Enter a 10-digit Indian mobile number.');
+  if(!d.ward)errs.push('Choose a ward.');
+  if(!d.category)errs.push('Choose the type of problem.');
+  if(!d.location)errs.push('Enter the street or a landmark.');
+  if(d.desc.length<10)errs.push('Describe the problem in at least 10 characters.');
+  var box=document.getElementById('formErr');
+  if(errs.length){box.hidden=false;box.innerHTML='Fix the following before submitting:<ul>'+errs.map(function(e){return '<li>'+e+'</li>';}).join('')+'</ul>';box.scrollIntoView({block:'nearest'});return;}
+  var btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Submitting...';
+  var file=form.photo.files&&form.photo.files[0];
+  d.photo=file?file.name:'';
+  api('POST','/api/complaints',d).then(function(r){
+    state.filed=Object.assign({},r.complaint,{phone:d.phone,sms:r.sms.status,smsBody:r.sms.message});
+    state.justFiled=r.complaint.id;state.prefillCat='';render();window.scrollTo(0,0);
+  },function(e){
+    btn.disabled=false;btn.textContent='Submit complaint';
+    box.hidden=false;
+    box.innerHTML=e.status?'The complaint was not saved. '+esc(e.message):'Could not reach the server, so nothing was saved. Check your connection and try again.';
+  });
+}
+function csvCell(v){v=String(v==null?'':v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"';}
+function csv(){
+  var rows=[['Number','Filed','Ward','Location','Type','Status','Crew','Name','Phone','Description']].concat(state.complaints.map(function(c){return [c.id,c.created,c.ward,c.location,c.category,c.status,c.crew||'',c.name||'',c.phone||'',c.desc||''];}));
+  return rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
+}
+function downloadCsv(){
+  var blob=new Blob(['﻿'+csv()],{type:'text/csv;charset=utf-8'});
+  var u=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=u;a.download='waste-complaints-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(u);},1500);
+  toast('Report downloaded');
+}
+
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-view],[data-track],[data-action],[data-cat]');if(!t)return;
+  if(t.hasAttribute('data-view')){go(t.getAttribute('data-view'));return;}
+  if(t.hasAttribute('data-track')){state.trackId=t.getAttribute('data-track');go('track');return;}
+  if(t.hasAttribute('data-cat')){state.prefillCat=t.getAttribute('data-cat');state.justFiled='';state.filed=null;state.view='report';render();try{document.title=TITLES.report;}catch(x){}window.scrollTo(0,0);return;}
+  var a=t.getAttribute('data-action');
+  if(a==='again'){state.justFiled='';state.filed=null;state.prefillCat='';render();window.scrollTo(0,0);}
+  if(a==='resms'&&state.filed){
+    state.filed.sms='sending';render();
+    api('POST','/api/complaints/'+state.filed.id+'/resend-sms',{}).then(function(r){state.filed.sms=r.sms.status;state.filed.smsBody=r.sms.message;},function(){state.filed.sms='failed';}).then(function(){if(state.view==='report')render();});
+  }
+  if(a==='csv')downloadCsv();
+  if(a==='logout')logout('');
+});
+document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.id==='f-status'){state.f.status=t.value;updateTable();return;}
+  if(t.id==='f-ward'){state.f.ward=t.value;updateTable();return;}
+  if(t.hasAttribute&&t.hasAttribute('data-field')){adminChange(t.getAttribute('data-id'),t.getAttribute('data-field'),t.value);}
+});
+document.addEventListener('input',function(e){if(e.target.id==='f-q'){state.f.q=e.target.value;updateTable();}});
+document.addEventListener('submit',function(e){
+  e.preventDefault();
+  if(e.target.id==='reportForm')submitReport(e.target);
+  if(e.target.id==='trackForm'){state.trackId=normId(document.getElementById('t-id').value);runTrack();document.getElementById('trackResult').innerHTML=trackResult();}
+  if(e.target.id==='loginForm'){
+    var pw=document.getElementById('a-pass').value;
+    api('POST','/api/admin/login',{password:pw}).then(function(r){state.token=r.token;setToken(r.token);state.adminErr='';state.adminLoaded=false;state.complaints=[];render();loadAdmin();},function(err){state.adminErr=err.status?err.message:'Could not reach the server.';render();});
+  }
+});
+
+render();
+loadPublic();
+})();
+</script>
+
+</body>
+</html>

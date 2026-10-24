@@ -1,0 +1,9 @@
+{
+  "name": "waste-management-tracking-system",
+  "version": "2.0.0",
+  "description": "Waste Management Tracking System for Local Bodies: website, MongoDB database, SMS confirmation and authority dashboard",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "dependencies": { "mongodb": "^6.8.0" }
+}
