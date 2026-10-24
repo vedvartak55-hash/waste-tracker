@@ -300,10 +300,6 @@ pre{margin:0;background:var(--code-bg);color:var(--code-fg);border-radius:var(--
 .idcard dd{margin:0}
 .method{font-family:var(--font-mono);font-size:12px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
 
-.sms{width:100%;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
-.sms-head{width:100%;display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:center}
-.sms-bubble{background:var(--accent-soft);color:var(--fg);border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:14px;line-height:1.5;max-width:46ch;overflow-wrap:anywhere}
-.sms-note{font-size:12.5px;color:var(--muted);max-width:60ch}
 footer{border-top:1px solid var(--line);padding-block:32px 40px;display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));gap:28px;color:var(--muted);font-size:13.5px}
 @media (max-width:760px){footer{grid-template-columns:minmax(0,1fr)}}
 footer h4{margin:0 0 8px;font-family:var(--font-display);font-size:15px;color:var(--fg)}
@@ -375,17 +371,6 @@ var CREWS=[
   {name:'Crew D',wards:['Agashi','Arnala']}
 ];
 var STATUSES=['Pending','Assigned','In progress','Resolved'];
-function smsPanel(c){
-  var s=c.sms||'failed';
-  var lab={sending:['st-assigned','Sending SMS'],sent:['st-resolved','SMS sent']}[s]||['st-pending','SMS not sent'];
-  var to='+91 '+c.phone.slice(0,5)+' '+c.phone.slice(5);
-  var note=s==='sent'?'Accepted by the SMS provider for '+to+'. It usually reaches the phone within a few seconds.'
-    :s==='sending'?'Contacting the SMS provider.'
-    :s==='dryrun'?'The server has no SMS provider set up yet, so nothing was sent. Your complaint is still registered. Keep the number above.'
-    :s==='limited'?'Too many SMS were requested for this number in the last hour, so none was sent now. Your complaint is registered. Keep the number above.'
-    :'The SMS could not be sent. Your complaint is registered, so keep the number above.';
-  return '<div class="sms"><div class="sms-head"><span class="eyebrow">SMS to '+esc(to)+'</span><span class="pill '+lab[0]+'">'+lab[1]+'</span></div>'+(c.smsBody?'<div class="sms-bubble">'+esc(c.smsBody)+'</div>':'')+'<p class="sms-note">'+note+'</p>'+(s==='failed'?'<button class="btn ghost small" data-action="resms" data-id="'+c.id+'">Try sending again</button>':'')+'</div>';
-}
 var KEY={'Pending':'pending','Assigned':'assigned','In progress':'progress','Resolved':'resolved'};
 var IC={
   bin:'<path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z"/><path d="M3.5 7h17M9.5 7V4.5h5V7"/>',
@@ -524,7 +509,7 @@ function viewHome(){
 
   '<section><div class="sec-head"><div class="eyebrow">How it works</div><h2>From a complaint to a clean street in three steps</h2></div>'+
   '<div class="steps">'+
-    '<div class="step"><div class="eyebrow">Step 1</div><h3>Citizen reports</h3><p>Pick your ward, choose the type of problem, add the landmark and a short description. You get a complaint number straight away and a confirmation SMS.</p></div>'+
+    '<div class="step"><div class="eyebrow">Step 1</div><h3>Citizen reports</h3><p>Pick your ward, choose the type of problem, add the landmark and a short description. You get a complaint number straight away, which you use to track progress.</p></div>'+
     '<div class="step"><div class="eyebrow">Step 2</div><h3>Authority assigns</h3><p>The local body sees the complaint on its dashboard and assigns a collection crew for that ward.</p></div>'+
     '<div class="step"><div class="eyebrow">Step 3</div><h3>Crew resolves, status updates</h3><p>The status moves to in progress and then resolved. Anyone with the complaint number can check it.</p></div>'+
   '</div></section>'+
@@ -574,14 +559,14 @@ function viewReport(){
       '<div class="eyebrow">Complaint received</div><div class="tk-id mono">'+c.id+'</div>'+
       '<p>Your complaint has been saved and sent to the authority for '+esc(c.ward)+'. Keep this number to check progress.</p>'+
       '<dl class="kv"><dt>Type</dt><dd>'+esc(c.category)+'</dd><dt>Location</dt><dd>'+esc(c.location)+', '+esc(c.ward)+'</dd><dt>Filed</dt><dd>'+fmtDate(c.created)+'</dd><dt>Status</dt><dd>'+pill(c.status)+'</dd></dl>'+
-      smsPanel(c)+
+      '<p class="hint">Write this number down or take a screenshot. It is the only way to look up your complaint later.</p>'+
       '<div class="actions"><button class="btn" data-track="'+c.id+'">Track this complaint</button><button class="btn ghost" data-action="again">Report another</button></div>'+
       '</div><div class="aside"><h3>What happens next</h3><ul><li>The authority reviews the complaint and assigns a crew.</li><li>Status changes to in progress when work starts.</li><li>Complaints open for more than 72 hours are flagged as overdue.</li></ul></div></section>';
   }
   return '<section><div class="sec-head"><div class="eyebrow">Citizen portal</div><h2>Report a waste or sanitation issue</h2><p>Takes about a minute. Fields marked with an asterisk are required.</p></div>'+
   '<div class="page-grid"><form class="panel" id="reportForm" novalidate><div class="formgrid">'+
     '<div class="field"><label for="r-name">Your name *</label><input id="r-name" name="name" autocomplete="name"></div>'+
-    '<div class="field"><label for="r-phone">Mobile number *</label><input id="r-phone" name="phone" inputmode="numeric" autocomplete="tel" placeholder="10 digits"><span class="hint">Only the authority can see this. A confirmation SMS is sent to this number.</span></div>'+
+    '<div class="field"><label for="r-phone">Mobile number *</label><input id="r-phone" name="phone" inputmode="numeric" autocomplete="tel" placeholder="10 digits"><span class="hint">Only the authority can see this. The ward office may call you on this number if it needs more details.</span></div>'+
     '<div class="field"><label for="r-ward">Ward *</label><select id="r-ward" name="ward"><option value="">Choose a ward</option>'+WARDS.map(function(w){return '<option>'+w+'</option>';}).join('')+'</select></div>'+
     '<div class="field"><label for="r-cat">Type of problem *</label><select id="r-cat" name="category"><option value="">Choose a type</option>'+CATS.map(function(w){return '<option'+(w===state.prefillCat?' selected':'')+'>'+w+'</option>';}).join('')+'</select></div>'+
     '<div class="field full"><label for="r-loc">Street or landmark *</label><input id="r-loc" name="location" placeholder="For example, near the station east foot overbridge"></div>'+
@@ -725,7 +710,7 @@ function viewAbout(){
   '</section>'+
 
   '<section><div class="sec-head"><div class="eyebrow">Modules</div><h2>Three parts, one workflow</h2></div><div class="features">'+
-    '<div class="feat">'+icon('report')+'<h3>Citizen module</h3><p>Report an issue with ward, type, landmark, description and an optional photo. Receive a complaint number and a confirmation SMS. Track the status and read the activity log.</p></div>'+
+    '<div class="feat">'+icon('report')+'<h3>Citizen module</h3><p>Report an issue with ward, type, landmark, description and an optional photo. Receive a complaint number. Track the status and read the activity log.</p></div>'+
     '<div class="feat">'+icon('dash')+'<h3>Authority module</h3><p>View all complaints, filter and search, assign collection crews, update status, and see overdue complaints at a glance.</p></div>'+
     '<div class="feat">'+icon('chart')+'<h3>Records and analytics</h3><p>Every complaint and status change is stored. Charts by ward and type, a 7-day trend, crew workload and a ward report show where to focus.</p></div>'+
   '</div></section>'+
@@ -744,10 +729,9 @@ function viewAbout(){
 
   '<section class="duo"><div><div class="sec-head" style="margin-bottom:12px"><div class="eyebrow">Data model</div><h3 style="font-size:24px">Complaint document</h3></div><pre><code>'+esc(SCHEMA)+'</code></pre></div>'+
   '<div><div class="sec-head" style="margin-bottom:12px"><div class="eyebrow">API</div><h3 style="font-size:24px">API endpoints</h3></div><div class="tablewrap tbl-sm"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead><tbody>'+
-    '<tr><td><span class="method">POST</span></td><td class="mono">/api/complaints</td><td>Citizen files a complaint; it is saved and the SMS is sent</td></tr>'+
+    '<tr><td><span class="method">POST</span></td><td class="mono">/api/complaints</td><td>Citizen files a complaint; it is saved in the database</td></tr>'+
     '<tr><td><span class="method">GET</span></td><td class="mono">/api/complaints/:id</td><td>Track one complaint</td></tr>'+
     '<tr><td><span class="method">GET</span></td><td class="mono">/api/public/complaints</td><td>Public list without personal details</td></tr>'+
-    '<tr><td><span class="method">POST</span></td><td class="mono">/api/complaints/:id/resend-sms</td><td>Resend the confirmation SMS</td></tr>'+
     '<tr><td><span class="method">POST</span></td><td class="mono">/api/admin/login</td><td>Authority sign-in</td></tr>'+
     '<tr><td><span class="method">GET</span></td><td class="mono">/api/admin/complaints</td><td>Authority list with full details</td></tr>'+
     '<tr><td><span class="method">PATCH</span></td><td class="mono">/api/admin/complaints/:id</td><td>Assign a crew or update status</td></tr>'+
@@ -755,7 +739,7 @@ function viewAbout(){
 
   '<section class="duo"><div class="panel"><div class="eyebrow" style="margin-bottom:12px">Project details</div><dl class="idcard"><dt>Project title</dt><dd>Waste Management Tracking System for Local Bodies</dd><dt>Group size</dt><dd>1</dd><dt>Student</dt><dd>Ved Yogesh Vartak</dd><dt>Roll number</dt><dd>104</dd></dl>'+
   '<div class="techchips" style="margin-top:16px"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>React.js</span><span>Node.js</span><span>MongoDB</span></div></div>'+
-  '<div class="panel"><div class="eyebrow" style="margin-bottom:12px">Future scope</div><div class="aside"><ul><li>SMS and email updates every time a complaint changes status</li><li>GPS location and photo upload with each complaint</li><li>Separate accounts and roles for each ward officer</li><li>Crew mobile app and route planning for collection vehicles</li><li>Downloadable monthly reports</li></ul></div></div></section>';
+  '<div class="panel"><div class="eyebrow" style="margin-bottom:12px">Future scope</div><div class="aside"><ul><li>SMS or email updates every time a complaint changes status</li><li>GPS location and photo upload with each complaint</li><li>Separate accounts and roles for each ward officer</li><li>Crew mobile app and route planning for collection vehicles</li><li>Downloadable monthly reports</li></ul></div></div></section>';
 }
 
 /* ---------- render ---------- */
@@ -811,7 +795,7 @@ function submitReport(form){
   var file=form.photo.files&&form.photo.files[0];
   d.photo=file?file.name:'';
   api('POST','/api/complaints',d).then(function(r){
-    state.filed=Object.assign({},r.complaint,{phone:d.phone,sms:r.sms.status,smsBody:r.sms.message});
+    state.filed=Object.assign({},r.complaint,{phone:d.phone});
     state.justFiled=r.complaint.id;state.prefillCat='';render();window.scrollTo(0,0);
   },function(e){
     btn.disabled=false;btn.textContent='Submit complaint';
@@ -840,10 +824,6 @@ document.addEventListener('click',function(e){
   if(t.hasAttribute('data-cat')){state.prefillCat=t.getAttribute('data-cat');state.justFiled='';state.filed=null;state.view='report';render();try{document.title=TITLES.report;}catch(x){}window.scrollTo(0,0);return;}
   var a=t.getAttribute('data-action');
   if(a==='again'){state.justFiled='';state.filed=null;state.prefillCat='';render();window.scrollTo(0,0);}
-  if(a==='resms'&&state.filed){
-    state.filed.sms='sending';render();
-    api('POST','/api/complaints/'+state.filed.id+'/resend-sms',{}).then(function(r){state.filed.sms=r.sms.status;state.filed.smsBody=r.sms.message;},function(){state.filed.sms='failed';}).then(function(){if(state.view==='report')render();});
-  }
   if(a==='csv')downloadCsv();
   if(a==='logout')logout('');
 });
