@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ved-waste-tracker-104
+    name: waste-tracker-104
     runtime: node
     plan: free
     buildCommand: npm install
