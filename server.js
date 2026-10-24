@@ -1,5 +1,5 @@
 'use strict';
-// Website + database + SMS in one Node.js app.
+// Website + database in one Node.js app.
 // Needs Node.js 18+. The only npm package is `mongodb`, and only when MONGODB_URI is set.
 const http = require('http');
 const fs = require('fs');
@@ -26,12 +26,8 @@ const CREWS = [
 const CREW_NAMES = CREWS.map((c) => c.name);
 const crewForWard = (w) => (CREWS.find((c) => c.wards.includes(w)) || CREWS[0]).name;
 
-const PROVIDER = (process.env.SMS_PROVIDER || 'dryrun').toLowerCase();
-const SITE_URL = (process.env.SITE_URL || '').trim();
 const ALLOWED_ORIGIN = (process.env.ALLOWED_ORIGIN || '*').trim();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
-const TWILIO_BASE = process.env.TWILIO_API_BASE || 'https://api.twilio.com';
-const FAST2SMS_URL = process.env.FAST2SMS_URL || 'https://www.fast2sms.com/dev/bulkV2';
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon' };
 
@@ -154,65 +150,8 @@ function sampleDocs() {
     if (idx >= 1) { crew = crewForWard(r[0]); history.push({ status: 'Assigned', at: new Date(created + age * 0.12 * HR).toISOString(), note: 'Assigned to ' + crew }); }
     if (idx >= 2) history.push({ status: 'In progress', at: new Date(created + age * 0.22 * HR).toISOString(), note: 'Crew started work' });
     if (idx >= 3) history.push({ status: 'Resolved', at: new Date(created + age * 0.38 * HR).toISOString(), note: 'Marked resolved by authority' });
-    return { name: names[i % names.length], phone: '', ward: r[0], category: r[1], location: r[2], desc: r[3], photo: '', status: r[4], crew, created: new Date(created).toISOString(), history, sms: 'none', sample: true };
+    return { name: names[i % names.length], phone: '', ward: r[0], category: r[1], location: r[2], desc: r[3], photo: '', status: r[4], crew, created: new Date(created).toISOString(), history, sample: true };
   }).sort((a, b) => (a.created < b.created ? -1 : 1)); // oldest first so the newest gets the highest number
-}
-
-/* ------------------------------------------------------------------ */
-/* SMS                                                                */
-/* ------------------------------------------------------------------ */
-function clip(s, n) {
-  s = String(s).replace(/\s+/g, ' ').trim();
-  return s.length > n ? s.slice(0, n - 3) + '...' : s;
-}
-function buildMessage(c, siteUrl = SITE_URL) {
-  return 'Complaint registered successfully. ID: ' + c.id + '. Type: ' + c.category + '. Ward: ' + c.ward +
-    '. Location: ' + clip(c.location, 40) + '. Status: Pending.' +
-    (siteUrl ? ' Track at ' + siteUrl + '.' : ' Track it with this ID on the Waste Management Tracking System.') +
-    ' -Waste Mgmt Tracking System';
-}
-
-async function sendTwilio(phone, text) {
-  const sid = process.env.TWILIO_ACCOUNT_SID, token = process.env.TWILIO_AUTH_TOKEN, from = process.env.TWILIO_FROM;
-  if (!sid || !token || !from) throw new Error('Twilio settings are missing');
-  const res = await fetch(TWILIO_BASE + '/2010-04-01/Accounts/' + sid + '/Messages.json', {
-    method: 'POST',
-    headers: { Authorization: 'Basic ' + Buffer.from(sid + ':' + token).toString('base64'), 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ To: '+91' + phone, From: from, Body: text })
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error('Twilio: ' + (data.message || res.status));
-  return data.sid;
-}
-async function sendFast2sms(phone, text) {
-  const key = process.env.FAST2SMS_API_KEY;
-  if (!key) throw new Error('FAST2SMS_API_KEY is missing');
-  const res = await fetch(FAST2SMS_URL, {
-    method: 'POST',
-    headers: { authorization: key, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ route: 'q', message: text, language: 'english', flash: 0, numbers: phone })
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.return !== true) throw new Error('Fast2SMS: ' + (Array.isArray(data.message) ? data.message.join(' ') : data.message || res.status));
-  return data.request_id;
-}
-async function deliver(phone, text) {
-  if (PROVIDER === 'twilio') return sendTwilio(phone, text);
-  if (PROVIDER === 'fast2sms') return sendFast2sms(phone, text);
-  console.log('[dryrun] SMS to +91' + phone + ':\n  ' + text);
-  return 'dryrun';
-}
-// Returns 'sent' | 'dryrun' | 'failed' | 'limited'
-async function sendConfirmationSms(doc, ip) {
-  if (!doc.phone) return 'failed';
-  if (!allow('phone:' + doc.phone, 3, 3600e3) || !allow('smsip:' + ip, 15, 3600e3)) return 'limited';
-  try {
-    await deliver(doc.phone, buildMessage(doc));
-    return PROVIDER === 'dryrun' ? 'dryrun' : 'sent';
-  } catch (err) {
-    console.error('SMS failed for ' + doc.id + ':', err.message);
-    return 'failed';
-  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -286,7 +225,7 @@ function publicView(d, detail) {
   return o;
 }
 function adminView(d) {
-  return { id: d.id, name: d.name, phone: d.phone, ward: d.ward, category: d.category, location: d.location, desc: d.desc, photo: d.photo || '', status: d.status, crew: d.crew || null, created: d.created, history: d.history, sms: d.sms || 'none' };
+  return { id: d.id, name: d.name, phone: d.phone, ward: d.ward, category: d.category, location: d.location, desc: d.desc, photo: d.photo || '', status: d.status, crew: d.crew || null, created: d.created, history: d.history };
 }
 
 /* ------------------------------------------------------------------ */
@@ -315,20 +254,8 @@ async function createComplaint(req, res) {
   if (!allow('new:' + ip, 20, 3600e3)) return reply(res, 429, { ok: false, error: 'Too many complaints from this connection. Try again later.' });
 
   const now = new Date().toISOString();
-  let doc = await store.insert({ ...d, status: 'Pending', crew: null, created: now, history: [{ status: 'Pending', at: now, note: 'Complaint received' }], sms: 'pending' });
-  const sms = await sendConfirmationSms(doc, ip);
-  doc = (await store.update(doc.id, () => ({ set: { sms } }))) || doc;
-  reply(res, 201, { ok: true, complaint: publicView(doc, true), sms: { status: sms, message: buildMessage(doc) } });
-}
-
-async function resendSms(req, res, id) {
-  const doc = await store.get(id);
-  if (!doc || !doc.phone) return reply(res, 404, { ok: false, error: 'Complaint not found.' });
-  const ip = clientIp(req);
-  if (!allow('resend:' + id, 3, 3600e3)) return reply(res, 429, { ok: false, error: 'Too many attempts. Try again later.' });
-  const sms = await sendConfirmationSms(doc, ip);
-  await store.update(id, () => ({ set: { sms } }));
-  reply(res, 200, { ok: true, sms: { status: sms, message: buildMessage(doc) } });
+  const doc = await store.insert({ ...d, status: 'Pending', crew: null, created: now, history: [{ status: 'Pending', at: now, note: 'Complaint received' }] });
+  reply(res, 201, { ok: true, complaint: publicView(doc, true) });
 }
 
 async function adminLogin(req, res) {
@@ -390,7 +317,7 @@ async function route(req, res) {
   const url = req.url.split('?')[0];
   const m = req.method;
   if (m === 'OPTIONS') return reply(res, 204, {});
-  if (m === 'GET' && url === '/health') return reply(res, 200, { ok: true, database: store.kind, sms: PROVIDER, adminLogin: !!ADMIN_PASSWORD });
+  if (m === 'GET' && url === '/health') return reply(res, 200, { ok: true, database: store.kind, adminLogin: !!ADMIN_PASSWORD });
 
   if (m === 'POST' && url === '/api/complaints') return createComplaint(req, res);
   if (m === 'GET' && url === '/api/public/complaints') {
@@ -401,7 +328,6 @@ async function route(req, res) {
     const d = await store.get(r[1]);
     return d ? reply(res, 200, { ok: true, complaint: publicView(d, true) }) : reply(res, 404, { ok: false, error: 'Complaint not found.' });
   }
-  if (m === 'POST' && (r = url.match(/^\/api\/complaints\/(WM-\d{1,8})\/resend-sms$/))) return resendSms(req, res, r[1]);
 
   if (m === 'POST' && url === '/api/admin/login') return adminLogin(req, res);
   if (url.startsWith('/api/admin/')) {
@@ -428,9 +354,8 @@ async function main() {
   });
   const port = process.env.PORT || 3000;
   server.listen(port, () => {
-    console.log('Website + database + SMS on port ' + port);
+    console.log('Website + database on port ' + port);
     console.log('  database : ' + (store.kind === 'mongodb' ? 'MongoDB' : 'local file (data is lost if the host resets its disk; set MONGODB_URI for permanent storage)'));
-    console.log('  sms      : ' + (PROVIDER === 'dryrun' ? 'NOT CONFIGURED, no real SMS will be sent (set SMS_PROVIDER)' : PROVIDER));
     console.log('  dashboard: ' + (ADMIN_PASSWORD ? 'password login on' : 'LOCKED, set ADMIN_PASSWORD to enable the authority login'));
   });
 }
